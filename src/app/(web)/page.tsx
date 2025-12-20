@@ -1,4 +1,4 @@
-import Footer from "@/components/web/footer";
+
 import HelpSection from "@/components/web/help-section";
 import HeroSection from "@/components/web/hero-section";
 import PhysicalReturnInfo from "@/components/web/physical-return-info";
@@ -17,7 +17,7 @@ export default function Page() {
         <HelpSection />
         <TestimonialsSection />
       </main>
-      <Footer />
+
     </div>
   )
 }

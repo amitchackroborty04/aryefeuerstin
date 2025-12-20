@@ -14,7 +14,7 @@ const packages = [
       "$8 Fee For Physical Receipts",
     ],
     buttonText: "$6 Pickup Request Now",
-    buttonColor: "bg-[#3BBAEB] hover:bg-[#2BA5D6]",
+    buttonColor: "bg-[#31B8FA] hover:bg-[#2BA5D6]/90",
   },
   {
     id: "standard",
@@ -24,7 +24,7 @@ const packages = [
     color: "black",
     features: ["Unlimited pickups for 30 days", "Free physical return labels", "$8 fee for physical receipt returns *"],
     buttonText: "Join EZ Prime - $30/Month",
-    buttonColor: "bg-[#3BBAEB] hover:bg-[#2BA5D6]",
+    buttonColor: "bg-[#31B8FA] hover:bg-[#2BA5D6]/90",
   },
   {
     id: "premium",
@@ -34,7 +34,7 @@ const packages = [
     color: "black",
     features: ["Unlimited Pickups", "Unlimited Physical Label Printing", "Unlimited Physical Receipt Returns"],
     buttonText: "Join EZ Premium - $45/Month",
-    buttonColor: "bg-[#3BBAEB] hover:bg-[#2BA5D6]",
+    buttonColor: "bg-[#31B8FA] hover:bg-[#2BA5D6]/90",
   },
   {
     id: "business",
@@ -44,7 +44,7 @@ const packages = [
     color: "black",
     features: ["Bulk Pickup Option", "Weekly or Scheduled Pickups", "Weekly Scheduled Pickups"],
     buttonText: "Full Details Coming Soon",
-    buttonColor: "bg-[#3BBAEB] hover:bg-[#2BA5D6]",
+    buttonColor: "bg-[#31B8FA] hover:bg-[#2BA5D6]/90",
   },
 ]
 
@@ -64,7 +64,7 @@ export default function SubscriptionPackages() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {packages.map((pkg) => (
-            <div key={pkg.id} className="border border-gray-200 rounded-lg overflow-hidden flex flex-col">
+            <div key={pkg.id} className="border-2 border-[#3258DA] rounded-lg overflow-hidden flex flex-col">
               {/* Header */}
               <div className="bg-black text-white p-6 text-center">
                 <h3 className="font-semibold text-2xl ">{pkg.title}</h3>
@@ -80,10 +80,10 @@ export default function SubscriptionPackages() {
                 </div>
 
                 <div className="mb-6">
-                  <p className="text-xs font-bold text-blue-600 mb-3">THIS PLAN INCLUDES</p>
-                  <ul className="space-y-2">
+                  <p className="text-base font-midium text-[#4338CA] mb-3 text-center bg-[#EEF2FF] py-2">THIS PLAN INCLUDES</p>
+                  <ul className="space-y-2 mt-5">
                     {pkg.features.map((feature, index) => (
-                      <li key={index} className="text-xs text-gray-700 flex items-start gap-2">
+                      <li key={index} className="text-base font-normal text-[#000000] flex items-start gap-2">
                         <span className="text-gray-400 mt-0.5">•</span>
                         <span>{feature}</span>
                       </li>
@@ -91,7 +91,7 @@ export default function SubscriptionPackages() {
                   </ul>
                 </div>
 
-                <Button className={`${pkg.buttonColor} text-white rounded-full w-full mt-auto text-sm py-5`}>
+                <Button className={`${pkg.buttonColor} text-white h-[51px] rounded-[8px] w-full mt-auto text-sm py-5`}>
                   {pkg.buttonText}
                 </Button>
               </div>

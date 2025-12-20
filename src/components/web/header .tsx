@@ -20,7 +20,7 @@ const menuItems = [
   { name: "Driver", hasDropdown: true, href: "/driver" },
   { name: "Company", hasDropdown: true, href: "/company" },
 //   { name: "Login", hasDropdown: false, href: "/login" },
-  { name: "Join Now", hasDropdown: false, isButton: true, href: "/join" },
+  { name: "Join Now", hasDropdown: false, isButton: true, href: "/join-now" },
 ]
 
 export default function Header() {
@@ -31,6 +31,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           {/* Logo */}
+          <Link href="/">
           <div className="w-[120px] h-[75px]">
             <Image
               src="/logo.png"
@@ -40,6 +41,7 @@ export default function Header() {
               className="w-full h-full object-cover"
             />
           </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
