@@ -107,3 +107,101 @@ export default function MapPicker({ onSelect }: { onSelect: (val: any) => void }
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useState } from "react";
+// import { GoogleMap, Marker, useLoadScript, StandaloneSearchBox } from "@react-google-maps/api";
+
+// interface LocationData {
+//   address: string;
+//   lat: number;
+//   lng: number;
+// }
+
+// interface Props {
+//   onSelect: (data: LocationData) => void;
+// }
+
+// const libraries: ("places")[] = ["places"];
+
+// export default function LocationPickerModal({ onSelect }: Props) {
+//   const { isLoaded } = useLoadScript({
+//     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+//     libraries,
+//   });
+
+//   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>({
+//     lat: 23.8103,
+//     lng: 90.4125,
+//   });
+
+//   const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox | null>(null);
+
+//   const handlePlacesChanged = () => {
+//     if (searchBox) {
+//       const places = searchBox.getPlaces();
+//       if (places && places.length > 0) {
+//         const place = places[0];
+//         if (place.geometry?.location) {
+//           const lat = place.geometry.location.lat();
+//           const lng = place.geometry.location.lng();
+//           setMarker({ lat, lng });
+//           onSelect({ address: place.formatted_address || "", lat, lng });
+//         }
+//       }
+//     }
+//   };
+
+//   const handleMapClick = async (event: google.maps.MapMouseEvent) => {
+//     if (event.latLng) {
+//       const lat = event.latLng.lat();
+//       const lng = event.latLng.lng();
+//       setMarker({ lat, lng });
+
+//       // Reverse geocoding
+//       const geocoder = new google.maps.Geocoder();
+//       geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+//         if (status === "OK" && results && results[0]) {
+//           onSelect({ address: results[0].formatted_address, lat, lng });
+//         } else {
+//           onSelect({ address: "Selected Location", lat, lng });
+//         }
+//       });
+//     }
+//   };
+
+//   if (!isLoaded) return <div>Loading map...</div>;
+
+//   return (
+//     <div className="h-[400px] w-full rounded-md border overflow-hidden relative">
+//       <GoogleMap
+//         center={marker || { lat: 23.8103, lng: 90.4125 }}
+//         zoom={13}
+//         mapContainerStyle={{ height: "100%", width: "100%" }}
+//         onClick={handleMapClick}
+//       >
+//         <StandaloneSearchBox
+//           onLoad={(ref) => setSearchBox(ref)}
+//           onPlacesChanged={handlePlacesChanged}
+//         >
+//           <input
+//             type="text"
+//             placeholder="Search for address..."
+//             className="absolute top-3 left-3 z-10 w-72 h-10 px-3 rounded border border-gray-300 shadow"
+//           />
+//         </StandaloneSearchBox>
+
+//         {marker && <Marker position={marker} />}
+//       </GoogleMap>
+//     </div>
+//   );
+// }
