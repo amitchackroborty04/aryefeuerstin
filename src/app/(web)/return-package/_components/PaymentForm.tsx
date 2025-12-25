@@ -6,7 +6,7 @@ import { CheckCircle } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useMutation } from "@tanstack/react-query"
 import Image from "next/image"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 // Define proper types based on your actual API response
 interface Customer {
@@ -111,7 +111,8 @@ export function SummaryReview({
     },
     onSuccess: (data) => {
       if (data?.status && data?.data?.checkoutUrl) {
-        window.location.href = data.data.checkoutUrl
+     
+        
         router.push(data.data.checkoutUrl)
 
       } else {
