@@ -27,13 +27,14 @@ export default function OurMission() {
 
         {/* Left Side - Image (Show SECOND on Mobile) */}
         <div className="order-2 lg:order-1 w-full">
-          <div className="relative w-full h-[260px] sm:h-[360px] md:h-[450px] lg:h-[562px] overflow-hidden rounded-2xl shadow-xl">
+          <div className="relative w-full h-[260px] sm:h-[360px] md:h-[450px] lg:h-[503px] overflow-hidden ">
             <Image
-              src="/image/about4.png"
+              src="/image/aboutN1.png"
               alt="Our mission"
-              fill
-              className="object-cover"
-              priority
+              width={1000}
+              height={1000}
+              className="w-full h-full object-cover"
+              
             />
           </div>
         </div>

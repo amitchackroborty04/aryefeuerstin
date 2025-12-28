@@ -1,7 +1,11 @@
+"use client"
 import { Button } from "@/components/ui/button"
+
+
 import Image from "next/image"
 
 export default function HeroSection() {
+
   return (
     <section className="bg-[#E4F6FF] py-12 md:py-20 lg:py-24">
       <div className="container mx-auto px-4">
@@ -24,7 +28,7 @@ export default function HeroSection() {
           {/* Right Illustration */}
           <div className="flex justify-center lg:justify-end">
             <div className="relative w-full  h-auto lg:h-[484px] ">
-              <Image src="/image/herosection.jpg" alt="Delivery person with packages and truck" width={1000} height={1000} className="w-full h-full object-cover" />
+              <Image src="/image/newB.png" alt="Delivery person with packages and truck" width={1000} height={1000} className="w-full h-full object-cover" />
             </div>
           </div>
         </div>

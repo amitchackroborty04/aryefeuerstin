@@ -189,7 +189,7 @@ export default function OrderRequestsPage() {
                   <div className="flex items-start gap-2 border-b pb-2">
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
                     <span className="text-sm text-gray-700">
-                      {order.customer.pickupLocation.address}
+                      {order?.customer?.pickupLocation?.address}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Poppins as PoppinsFont } from "next/font/google";
 import ReactQueryProvider from "@/components/provider/ReactQueryProvider";
 import { SessionProvider } from "@/components/provider/SessionProvider";
+import { UserProvider } from "./UserContext";
 
 const poppins = PoppinsFont({
   subsets: ["latin"],
@@ -32,7 +33,10 @@ export default function RootLayout({
         <NextTopLoader color="#31B8FA" height={3} showSpinner={false} />
         <ReactQueryProvider>
           <SessionProvider>
+            <UserProvider>
+
             {children}
+            </UserProvider>
           </SessionProvider>
         </ReactQueryProvider>
         <Toaster position="top-right" richColors />

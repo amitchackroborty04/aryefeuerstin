@@ -41,13 +41,14 @@ export default function TrustUs() {
 
         {/* Right Side - Image */}
         <div className="w-full">
-          <div className="relative w-full h-[260px] sm:h-[360px] md:h-[450px] lg:h-[500px] overflow-hidden rounded-2xl shadow-xl">
+          <div className="relative w-full h-[260px] sm:h-[360px] md:h-[450px] lg:h-[500px] overflow-hidden">
             <Image
-              src="/image/about5.png"
+              src="/image/aboutN2.png"
               alt="Why trust us"
-              fill
-              className="object-cover"
-              priority
+              width={1000}
+              height={1000}
+              className="w-full h-full object-cover"
+              
             />
           </div>
         </div>
