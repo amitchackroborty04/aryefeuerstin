@@ -1,7 +1,4 @@
 
-
-
-
 import { type AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials"
 
@@ -34,7 +31,7 @@ export const authOptions: AuthOptions = {
 
           const result = await res.json()
 
-          // ❌ login failed
+          //  login failed
           if (!res.ok || !result?.status || !result?.data?.user) {
             return null
           }

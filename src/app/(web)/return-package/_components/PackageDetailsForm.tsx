@@ -466,17 +466,17 @@ export function PackageDetailsForm({
 
           {hasReceipt && (
             <div className="mt-4">
-              <Label htmlFor="creditCardLast4">Last 4 digits of credit card used for purchase</Label>
+              {/* <Label htmlFor="creditCardLast4">Last 4 digits of credit card used for purchase</Label> */}
               <Input
                 id="creditCardLast4"
-                placeholder="4242"
+                placeholder="Enter last 4 digits of your credit card"
                 maxLength={4}
                 className="mt-1 bg-white w-full"
                 {...register("creditCardLast4")}
               />
               <div className="pt-5">
                 <p className="text-sm text-gray-600 font-medium mb-3">
-                  Note: <span className="text-[#FF4928]">Additional fee: $8.00 (applies to pay-per-package and standard accounts).</span>
+                  Note: <span className="text-[#FF4928]">Additional fee: $8.00 (applies to pay-per-pickup and standard accounts)..</span>
                 </p>
                 <p className="text-sm text-[#FF4928]">*Returns to stores that require a physical receipt can only be processed if the item was purchased using a credit card</p>
                 <p className="text-sm text-[#FF4928]">*Please provide the last four digits of the credit card used for the purchase.</p>
@@ -487,7 +487,7 @@ export function PackageDetailsForm({
       </Collapsible>
 
       {/* Return Shipping Label (Dimensions) */}
-      <Collapsible
+      {/* <Collapsible
         open={openSections.includes("returnShipping")}
         onOpenChange={() => toggleSection("returnShipping")}
         className="bg-[#F8FAFC] p-4 rounded-lg border"
@@ -541,7 +541,7 @@ export function PackageDetailsForm({
             </div>
           )}
         </CollapsibleContent>
-      </Collapsible>
+      </Collapsible> */}
 
       {/* Message Note */}
       <Collapsible
@@ -553,7 +553,7 @@ export function PackageDetailsForm({
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center space-x-2">
               <PackageIcon className="w-5 h-5 text-gray-600" />
-              <span className="font-medium text-gray-900">Leave a message/note?</span>
+              <span className="font-medium text-gray-900">Message System</span>
             </div>
             <ChevronDown
               className={cn(
@@ -565,7 +565,9 @@ export function PackageDetailsForm({
         </CollapsibleTrigger>
         <CollapsibleContent className="pt-4 px-2">
           <RadioGroup onValueChange={(v) => setValue("leaveMessage", v === "yes")} defaultValue="no">
-            <div className="flex items-center space-x-6">
+               <Label>Do you want to leave a message?</Label>
+            <div className="flex items-center space-x-6 pt-2">
+           
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="yes" id="m-yes" />
                 <Label htmlFor="m-yes">Yes</Label>
@@ -579,16 +581,16 @@ export function PackageDetailsForm({
 
           {leaveMessage && (
             <div className="mt-4">
-              <Label>Message / Note</Label>
+              <p className="text-sm pb-2">Optional notes box</p>
               <Textarea
                 rows={4}
-                placeholder="e.g. Handle with care, fragile items"
+                placeholder="Write Here"
                 className="mt-1"
                 {...register("message")}
               />
-              <p className="text-xs text-[#FF4928] mt-2">
+              {/* <p className="text-xs text-[#FF4928] mt-2">
                 Note : “Add extra $8 fot basic and standard package”
-              </p>
+              </p> */}
             </div>
           )}
         </CollapsibleContent>

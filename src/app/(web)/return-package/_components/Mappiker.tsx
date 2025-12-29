@@ -1,221 +1,238 @@
-/* eslint-disable */
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMap,
-  useMapEvents,
-} from "react-leaflet"
-import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
-import "leaflet/dist/leaflet.css"
-import "leaflet-geosearch/dist/geosearch.css"
-import L from "leaflet"
+import { useState, useEffect } from "react";
+import { GoogleMap, Marker, useLoadScript, StandaloneSearchBox } from "@react-google-maps/api";
+import { Loader2, MapPin } from "lucide-react";
 
-// 🔧 Fix Leaflet default marker icon
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-})
-
-// 📌 Types
-interface LocationData {
-  address: string
-  lat: number
-  lng: number
+interface DataProps {
+  address: string;
+  lat: number;
+  lng: number;
 }
 
-// 🔍 Search Control (ONLY ONE)
-function SearchControl({
-  onLocationFound,
-}: {
-  onLocationFound: (data: LocationData) => void
-}) {
-  const map = useMap()
-
-  useEffect(() => {
-    const provider = new OpenStreetMapProvider()
-
-    const searchControl = new (GeoSearchControl as any)({
-      provider,
-      style: "bar",
-      autoComplete: true,
-      autoClose: true,
-      keepResult: true,
-      showMarker: false, // আমরা নিজে marker দেখাব
-      showPopup: false,
-      searchLabel: "Search address...",
-      notFoundMessage: "Address not found",
-    })
-
-    map.addControl(searchControl)
-
-    const handler = (result: any) => {
-      const fullLabel = result.location.label
-      const shortAddress = fullLabel
-        .split(",")
-        .slice(0, 3)
-        .join(",")
-        .trim()
-
-      onLocationFound({
-        address: shortAddress || fullLabel,
-        lat: result.location.y,
-        lng: result.location.x,
-      })
-    }
-
-    map.on("geosearch/showlocation" as any, handler)
-
-    return () => {
-      map.off("geosearch/showlocation" as any, handler)
-      map.removeControl(searchControl)
-    }
-  }, [map, onLocationFound])
-
-  return null
+interface LocationPickerModalProps {
+  onSelect: (val: DataProps) => void;
+  onClose?: () => void;
+  initialLocation?: DataProps | null; // ← Add this prop
 }
 
-// 🖱️ Click on map to select location
-function MapClickHandler({
-  onLocationSelected,
-}: {
-  onLocationSelected: (data: LocationData) => void
-}) {
-  useMapEvents({
-    click(e) {
-      const { lat, lng } = e.latlng
+const libraries: ("places")[] = ["places"];
 
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const addr = data.address || {}
-          const house = addr.house_number ? `${addr.house_number} ` : ""
-          const road = addr.road || addr.street || "Unnamed Road"
-          const city =
-            addr.city ||
-            addr.town ||
-            addr.village ||
-            addr.hamlet ||
-            addr.state ||
-            ""
-
-          const address = `${house}${road}, ${city}`.trim()
-
-          onLocationSelected({
-            address: address || "Selected Location",
-            lat,
-            lng,
-          })
-        })
-        .catch(() => {
-          onLocationSelected({
-            address: "Selected Location",
-            lat,
-            lng,
-          })
-        })
-    },
-  })
-
-  return null
-}
-
-// 🗺️ Main Map Picker
-export default function MapPicker({
+export default function LocationPickerModal({
   onSelect,
-  onClose,
-}: {
-  onSelect: (data: LocationData) => void
-  onClose: () => void
-}) {
-  const [center, setCenter] = useState<[number, number]>([
-    23.8103, 90.4125, // Dhaka default
-  ])
-  const [selectedLocation, setSelectedLocation] =
-    useState<LocationData | null>(null)
+ 
+  initialLocation,
+}: LocationPickerModalProps) {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries,
+  });
 
-  const handleLocationSelect = (data: LocationData) => {
-    setCenter([data.lat, data.lng])
-    setSelectedLocation(data)
-  }
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({
+    lat: initialLocation?.lat ?? 23.8103,
+    lng: initialLocation?.lng ?? 90.4125,
+  });
 
-  const confirm = () => {
-    if (selectedLocation) {
-      onSelect(selectedLocation)
+  const [tempLocation, setTempLocation] = useState<DataProps | null>(
+    initialLocation || null
+  );
+
+  const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox | null>(null);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  // Sync position and tempLocation when initialLocation changes (e.g., reopening modal)
+  useEffect(() => {
+    if (initialLocation) {
+      setPosition({ lat: initialLocation.lat, lng: initialLocation.lng });
+      setTempLocation(initialLocation);
     }
-    onClose()
+  }, [initialLocation]);
+
+  const handlePlacesChanged = () => {
+    if (searchBox) {
+      const places = searchBox.getPlaces();
+      if (places && places.length > 0) {
+        const place = places[0];
+        if (place.geometry?.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          const newPos = { lat, lng };
+          setPosition(newPos);
+
+          const shortName =
+            place.name ||
+            place.formatted_address?.split(",")[0] ||
+            "Selected Location";
+
+          const locationData = { address: shortName, lat, lng };
+          setTempLocation(locationData);
+          onSelect(locationData);
+        }
+      }
+    }
+  };
+
+  const handleMapClick = async (event: google.maps.MapMouseEvent) => {
+    if (event.latLng) {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      const newPos = { lat, lng };
+      setPosition(newPos);
+
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ location: newPos }, (results, status) => {
+        let shortName = "Selected Location";
+
+        if (status === "OK" && results && results[0]) {
+          const addressComponents = results[0].address_components;
+          const priorityTypes = [
+            "premise",
+            "point_of_interest",
+            "route",
+            "sublocality_level_1",
+            "sublocality",
+            "locality",
+            "administrative_area_level_2",
+            "administrative_area_level_1",
+          ];
+
+          for (const type of priorityTypes) {
+            const component = addressComponents.find((comp) =>
+              comp.types.includes(type)
+            );
+            if (component) {
+              shortName = component.long_name;
+              break;
+            }
+          }
+        }
+
+        const locationData = { address: shortName, lat, lng };
+        setTempLocation(locationData);
+        onSelect(locationData);
+      });
+    }
+  };
+
+  const handleGetMyLocation = () => {
+    if (navigator.geolocation) {
+      setIsGettingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const newPos = { lat, lng };
+          setPosition(newPos);
+
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ location: newPos }, (results, status) => {
+            setIsGettingLocation(false);
+            let shortName = "My Location";
+
+            if (status === "OK" && results && results[0]) {
+              const addressComponents = results[0].address_components;
+              const priorityTypes = [
+                "premise",
+                "point_of_interest",
+                "route",
+                "sublocality_level_1",
+                "sublocality",
+                "locality",
+                "administrative_area_level_2",
+                "administrative_area_level_1",
+              ];
+
+              for (const type of priorityTypes) {
+                const component = addressComponents.find((comp) =>
+                  comp.types.includes(type)
+                );
+                if (component) {
+                  shortName = component.long_name;
+                  break;
+                }
+              }
+            }
+
+            const locationData = { address: shortName, lat, lng };
+            setTempLocation(locationData);
+            onSelect(locationData);
+          });
+        },
+        (error) => {
+          setIsGettingLocation(false);
+          alert("Unable to retrieve your location. "+error.message);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="h-[500px] w-full flex items-center justify-center bg-gray-100 rounded-lg">
+        <Loader2 className="animate-spin text-gray-400" size={32} />
+      </div>
+    );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[90vh] max-h-[700px] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="p-5 border-b flex justify-between items-center">
-          <h3 className="text-xl font-semibold">Select Pickup Location</h3>
-          <button
-            onClick={onClose}
-            className="text-3xl text-gray-500 hover:text-gray-800"
-          >
-            ×
-          </button>
-        </div>
-
-        {/* Map */}
-        <div className="flex-1 relative">
-          <MapContainer
-            center={center}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <SearchControl onLocationFound={handleLocationSelect} />
-            <MapClickHandler onLocationSelected={handleLocationSelect} />
-
-            {selectedLocation && (
-              <Marker
-                position={[
-                  selectedLocation.lat,
-                  selectedLocation.lng,
-                ]}
+    <div className="space-y-3">
+      <div className="h-[500px] w-full rounded-md border overflow-hidden relative">
+        <GoogleMap
+          center={position}
+          zoom={13}
+          mapContainerStyle={{ height: "100%", width: "100%" }}
+          onClick={handleMapClick}
+          options={{
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            zoomControl: true,
+          }}
+        >
+          <div className="absolute top-3 left-3 z-10 flex gap-2">
+            <StandaloneSearchBox
+              onLoad={(ref) => setSearchBox(ref)}
+              onPlacesChanged={handlePlacesChanged}
+            >
+              <input
+                type="text"
+                placeholder="Search for address..."
+                className="w-72 h-10 px-3 rounded border border-gray-300 shadow-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
               />
-            )}
-          </MapContainer>
-        </div>
+            </StandaloneSearchBox>
 
-        {/* Footer */}
-        {selectedLocation && (
-          <div className="p-5 border-t bg-gray-50">
-            <p className="text-sm text-gray-700 mb-4">
-              <span className="font-medium">Selected:</span>{" "}
-              {selectedLocation.address}
-            </p>
-
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={onClose}
-                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirm}
-                className="px-7 py-2.5 bg-[#31B8FA] text-white rounded-lg hover:bg-[#31B8FA]/90"
-              >
-                Confirm Location
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleGetMyLocation}
+              disabled={isGettingLocation}
+              className="h-10 px-4 rounded bg-white border border-gray-300 shadow-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
+            >
+              {isGettingLocation ? (
+                <Loader2 className="animate-spin text-blue-500" size={18} />
+              ) : (
+                <MapPin className="text-blue-500" size={18} />
+              )}
+              <span className="text-sm font-medium text-gray-700">My Location</span>
+            </button>
           </div>
-        )}
+
+          <Marker position={position} />
+        </GoogleMap>
       </div>
+
+      {tempLocation && (
+        <div className="bg-gray-50 p-3 rounded-lg border">
+          <p className="text-sm text-gray-600">Selected Location:</p>
+          <p className="font-medium text-gray-900">{tempLocation.address}</p>
+          <p className="text-xs text-gray-500 mt-1">
+            Coordinates: {tempLocation.lat.toFixed(4)}, {tempLocation.lng.toFixed(4)}
+          </p>
+        </div>
+      )}
     </div>
-  )
+  );
 }

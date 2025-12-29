@@ -7,6 +7,7 @@ import TestimonialsSection from "@/components/web/testirnonials-section";
 
 
 export default function Page() {
+  
   return (
     <div className="min-h-screen">
      
