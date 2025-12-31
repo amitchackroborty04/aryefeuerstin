@@ -893,11 +893,7 @@ export function PackageDetailsForm({
                 <div className="flex items-center space-x-2">
                   <PackageIcon className="w-5 h-5 text-gray-600" />
                   <span className="font-medium text-gray-900">
-                    {store.returnStore
-                      ? store.returnStore === "OTHER"
-                        ? `${store.otherStoreName || "Other Store"}`
-                        : store.returnStore
-                      : "Select return store"}
+                 Select the return store for your item
                   </span>
                 </div>
                 <ChevronDown
