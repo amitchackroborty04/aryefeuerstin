@@ -58,7 +58,7 @@ import Link from "next/link"
 export default function HeroSection() {
   const session = useSession();
   const role = session?.data?.user?.role
-  console.log(role)
+  
 
   return (
     <section className="bg-[#E4F6FF] py-12 md:py-12 lg:py-14">
