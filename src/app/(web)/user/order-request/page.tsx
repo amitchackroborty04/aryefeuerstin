@@ -1,85 +1,88 @@
-"use client"
+"use client";
 
-import { MapPin, Package } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
-import { OrderCardSkeleton } from "./_components/OrderCardSkeleton"
-import { useSession } from "next-auth/react"
+import { MapPin, Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { OrderCardSkeleton } from "./_components/OrderCardSkeleton";
+import { useSession } from "next-auth/react";
 
 type Order = {
-  _id: string
+  _id: string;
   customer: {
-    firstName: string
-    lastName: string
+    firstName: string;
+    lastName: string;
     pickupLocation?: {
-      address: string
-    }
+      address: string;
+    };
     address?: {
-      street: string
-      city: string
-      zipCode: string
-    }
-  }
+      street: string;
+      city: string;
+      zipCode: string;
+    };
+  };
   stores: Array<{
-    numberOfPackages: number
-  }>
-  status: string
+    numberOfPackages: number;
+  }>;
+  status: string;
   review: {
-    rating: number | null
-    reviewedAt: string | null
-  }
-}
+    rating: number | null;
+    reviewedAt: string | null;
+  };
+};
 
 const fetchOrders = async (token: string): Promise<Order[]> => {
-  if (!token) throw new Error("Authentication token is missing")
+  if (!token) throw new Error("Authentication token is missing");
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/return-order`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/return-order`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.message || "Failed to fetch orders")
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to fetch orders");
   }
 
-  const json = await res.json()
-  return json.data.data
-}
+  const json = await res.json();
+  return json.data.data;
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
     case "ON_MY_WAY":
-      return "orange"
+      return "orange";
     case "PENDING":
-      return "purple"
+      return "purple";
     case "COMPLETED":
-      return "green"
+      return "green";
     default:
-      return "gray"
+      return "gray";
   }
-}
+};
 
 const getStatusText = (status: string) => {
   switch (status) {
     case "ON_MY_WAY":
-      return "On My Way"
+      return "On My Way";
     case "PENDING":
-      return "Pending"
+      return "Pending";
     case "COMPLETED":
-      return "Completed"
+      return "Completed";
     default:
-      return status || "Unknown"
+      return status || "Unknown";
   }
-}
+};
 
 export default function OrderRequestsPage() {
-  const { data: session, status: sessionStatus } = useSession()
-  const token = session?.accessToken as string | undefined
+  const { data: session, status: sessionStatus } = useSession();
+  const token = session?.accessToken as string | undefined;
 
   const {
     data: orders = [],
@@ -91,7 +94,7 @@ export default function OrderRequestsPage() {
     queryFn: () => fetchOrders(token!),
     enabled: !!token && sessionStatus === "authenticated",
     retry: 1,
-  })
+  });
 
   // Auth loading
   if (sessionStatus === "loading") {
@@ -99,7 +102,7 @@ export default function OrderRequestsPage() {
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
         <p className="text-gray-600">Loading session...</p>
       </div>
-    )
+    );
   }
 
   // Not logged in
@@ -107,13 +110,15 @@ export default function OrderRequestsPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
         <Card className="p-8 text-center">
-          <p className="text-gray-700 mb-4">You need to be logged in to view your orders.</p>
+          <p className="text-gray-700 mb-4">
+            You need to be logged in to view your orders.
+          </p>
           <Link href="/auth/signin">
             <Button>Sign In</Button>
           </Link>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -143,21 +148,25 @@ export default function OrderRequestsPage() {
             </Card>
           ) : (
             orders.map((order) => {
-              const fullName = `${order.customer.firstName} ${order.customer.lastName}`
+              const fullName = `${order.customer.firstName} ${order.customer.lastName}`;
 
               const address =
                 order.customer?.pickupLocation?.address ||
-                [order.customer?.address?.street, order.customer?.address?.city, order.customer?.address?.zipCode]
+                [
+                  order.customer?.address?.street,
+                  order.customer?.address?.city,
+                  order.customer?.address?.zipCode,
+                ]
                   .filter(Boolean)
                   .join(", ") ||
-                "Address not available"
+                "Address not available";
 
               const totalPackages = order.stores.reduce(
                 (sum, store) => sum + (store.numberOfPackages || 0),
                 0
-              )
+              );
 
-              const isCompleted = order.status === "COMPLETED"
+              const isCompleted = order.status === "COMPLETED";
 
               return (
                 <Card key={order._id} className="p-5 shadow-none border">
@@ -166,7 +175,9 @@ export default function OrderRequestsPage() {
                       <p className="mb-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Job #{order._id.slice(-6)}
                       </p>
-                      <h3 className="text-lg font-semibold text-gray-900">{fullName}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {fullName}
+                      </h3>
                     </div>
 
                     <span
@@ -199,27 +210,32 @@ export default function OrderRequestsPage() {
                   </div>
 
                   <div className="flex sm:flex-row justify-between gap-3 ">
-  <Link href={`/user/job-details/${order._id}`} className="flex-1">
-    <Button className="w-full bg-[#31B8FA] hover:bg-[#31B8FA]/90 text-white">
-      See Details
-    </Button>
-  </Link>
+                    <Link
+                      href={`/user/job-details/${order._id}`}
+                      className="flex-1"
+                    >
+                      <Button className="w-full bg-[#31B8FA] hover:bg-[#31B8FA]/90 text-white">
+                        See Details
+                      </Button>
+                    </Link>
 
-  {isCompleted && (
-    <Link href={`/user/review/${order._id}`} className="flex-1">
-      <Button className="w-full bg-[#31B8FA] hover:bg-[#31B8FA]/90 text-white">
-        Write a Review
-      </Button>
-    </Link>
-  )}
-</div>
-
+                    {isCompleted && (
+                      <Link
+                        href={`/user/review/${order._id}`}
+                        className="flex-1"
+                      >
+                        <Button className="w-full bg-[#31B8FA] hover:bg-[#31B8FA]/90 text-white">
+                          Write a Review
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </Card>
-              )
+              );
             })
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
