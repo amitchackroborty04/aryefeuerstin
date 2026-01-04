@@ -475,7 +475,7 @@ export default function LocationPickerModal({
           }}
         >
           {/* Search + My Location */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2 w-full max-w-md px-3">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10   flex flex-col  md:flex-row gap-2 w-full max-w-md px-3">
             <StandaloneSearchBox
               onLoad={(ref) => setSearchBox(ref)}
               onPlacesChanged={handlePlacesChanged}
