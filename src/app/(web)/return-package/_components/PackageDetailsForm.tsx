@@ -273,7 +273,8 @@ export function PackageDetailsForm({
                     <SelectItem value="SHEIN">Shein Return</SelectItem>
                     <SelectItem value="TARGET">Target</SelectItem>
                     <SelectItem value="WALMART">Walmart</SelectItem>
-                    <SelectItem value="HOME_DEPOT">Home Depot</SelectItem>
+                    <SelectItem value="WALMART">Walmart</SelectItem>
+                    <SelectItem value="WHOLE FOODS MARKET">WHOLE FOODS MARKET</SelectItem>
                     <SelectItem value="UPS">UPS Drop Off</SelectItem>
                     <SelectItem value="USPS">USPS Drop Off</SelectItem>
                     <SelectItem value="FEDEX">FedEx Drop Off</SelectItem>
